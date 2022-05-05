@@ -11,62 +11,89 @@ class Student extends Model
     protected $filllable=['name','email','password'];
     protected $dates=['created_at','updated_at'];
 
-    public static function register($name,$email,$password)
+    public static function paginateData()
     {
-        $c=new Student();
-        $c->name=$name;
-        $c->email=$email;
-        $c->password=$password;
+        $students = Student::paginate(3);
+        return $students;
+    }
+    
+    public static function studentRegister($name, $email, $password)
+    {
+        if((empty($name)) && (empty($email)) && (empty($password)))
+        {
+            return null;
+        }
+        $registration = new Student();
+        $registration->name = $name;
+        $registration->email = $email;
+        $registration->password = $password;
 
-        $c->save();
+        return $registration->save();
     }
 
-    public static function login($email,$password,$request)
+    public static function login($email, $password)
     {
-        $check=Student::where(['email'=>$email,'password'=>$password])->get();
-        if(count($check)>0)
+        if((empty($email)) && (empty($password)))
         {
-            $student=Student::where(['email'=>$email,'password'=>$password])->get();
-            $dat=$request->input('email');
-            $request->session()->put('email',$dat);
-            //$i_d= $request->session()->get('id');
-            $data=compact('student');
-            return $data;
+            return null;
         }
-        else
-        {
-            return;
-        }
+        return Self::where(['email'=>$email,'password'=>$password])
+                       ->get();
     }
 
-    public static function edit($id)
+    public static function viewStudent($email, $password)
     {
-        $student=Student::find($id);
-        $u=url('student.edit')."/".$id;
-        $data=compact('student','u');
+        if((empty($email)) && (empty($password)))
+        {
+            return null;
+        }
+        return Self::where(['email'=>$email,'password'=>$password])
+                      ->get();
+    }
+
+    public static function editStudent($id)
+    {
+        if(empty($id))
+        {
+            return null;
+        }
+        return Self::find($id);
+    }
+
+    public static function updateStudent($id, $name, $email, $password)
+    {
+        if((empty($id)) && (empty($name)) && (empty($email)) && (empty($password)))
+        {
+            return null;
+        }
+        return Student::where('id', $id)
+                       ->update([
+                                'name' => $name, 
+                                'email' => $email, 
+                                'password' => $password
+                                ]);
+    }
+
+    public static function addStudent($name, $email, $password)
+    {
+        if(empty($name) && (empty($email)) && (empty($password)))
+        {
+            return null;
+        }
+        $student = new Student;
+        $student->name = $name;
+        $student->email = $email;
+        $student->password = $password;
+        return $student->save();
+    }
+
+    public static function deleteStudent($id)
+    {
+        if(empty($id))
+        {
+            return null;
+        }
+        $data = Self::where('id', $id)->delete();
         return $data;
-    }
-
-    public static function updt($id,$request)
-    {
-        $res=Student::find($id);
-        $res->name=$request->input('name');
-        $res->email=$request->input('email');
-        $res->password=$request->input('password');
-        $res->save();
-    }
-
-    public static function store($name,$email,$password)
-    {
-    $res=new Student;
-    $res->name=$name;
-    $res->email=$email;
-    $res->password=$password;
-    $res->save();
-    }
-
-    public static function del($id)
-    {
-        Student::find($id)->delete();
     }
 }

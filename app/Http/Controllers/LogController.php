@@ -3,52 +3,96 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
- use App\Student;
- use App\Admin;
- use App\Log;
+use App\Http\Requests\LogRequest;
+use Illuminate\Pagination\LengthAwarePaginator as Paginator;
+use Exception;
+use App\Student;
+use App\Admin;
+use App\Log;
 
 class LogController extends Controller
 {
-    function index()
+    public function index(Request $request)
     {
-     $data = Log::index();
-     return view('details', compact('data'));
+        try
+        {
+            $data = Log::studentDetails();
+        }
+        catch(\Exception $exception)
+        {
+            return view('error')->with
+            (
+            'error',$exception->getMessage()
+            );
+        }
+        $filter_data = []; 
+        foreach($data as $row)
+        {
+            array_push($filter_data, $row);
+        }
+        $count = count($filter_data); 
+        $page = $request->page; 
+        $perPage = 3;
+        $offset = ($page-1) * $perPage;
+        $data = array_slice($filter_data, $offset, $perPage);
+        $data = new Paginator($data, $count, $perPage, $page, ['path'  => $request->url(),'query' => $request->query(),]);
+        return view('details',['data' => $data]);
+
     }
 
     public function issue()
     {
         if(session()->has('email'))
         {
-        return view('s_issue.issue');
+        return view('book_issue.issue');
         }
         return view('login');
-       }
+    }
     
     
 
-     public function store(Request $request)
+    public function store(LogRequest $request)
     {
-        $this->validate($request,['title'=>'required|string|max:255',
-        'issue_date'=>'required',
-        'return_date'=>'required',
-    ]);
-    $s_id=$request->input('s_id');
-    $title=$request->input('title');
-    $issue_date=$request->input('issue_date');
-    $return_date=$request->input('return_date');
+        $request->validate();
 
-    Log::store($s_id,$title,$issue_date,$return_date);
-    
-    return "Issued";
+        $s_id = $request->input('s_id');
+        $title = $request->input('title');
+        $issue_date = $request->input('issue_date');
+        $return_date = $request->input('return_date');
+        try
+        {
+            Log::bookIssue($s_id, $title, $issue_date, $return_date);
+        }
+        catch(\Exception $exception)
+        {
+            return view('error')->with
+            (
+            'error',$exception->getMessage()
+            );
+        }
+        return "Issued";
     }
 
 
-    public function show(Request $request)
+    public function studentInformation(Request $request)
     {
-        $student=Student::where('email',$request->input('email'))->get();
-        $data=compact('student');
-
-        return view('student-view')->with($data);
+        $email = $request->input('email');
+        if(!empty($email))
+        {
+            try
+            {
+                $student = Student::studentInformation($email);
+            }
+            catch(\Exception $exception)
+            {
+                return view('error')->with
+                (
+                'error',$exception->getMessage()
+                );
+            }
+            $data = compact('student');
+            return view('student-view')->with($data);
+        }
     }
 
 
@@ -56,21 +100,32 @@ class LogController extends Controller
     {
         if(session()->has('email'))
         {
-        return view('s_issue.reissue');
+        return view('book_issue.reissue');
         }
         return view('login');
-       }
+    }
 
     public function reissue(Request $request)
     {
-
-    $s_id=$request->input('s_id');
-    $title=$request->input('title');
-    $issue_date=$request->input('issue_date');
-    $return_date=$request->input('return_date');
-
-    Log::updateBook($s_id,$title,$issue_date,$return_date);
-    return "Reissued";
+        $s_id = $request->input('s_id');
+        $title = $request->input('title');
+        $issue_date = $request->input('issue_date');
+        $return_date = $request->input('return_date');
+        if((!empty($s_id)) && (!empty($title)) && (!empty($issue_date)) && (!empty($return_date)))
+        {
+            try
+            {
+                Log::reissueBook($s_id, $title, $issue_date, $return_date);
+            }
+            catch(\Exception $exception)
+            {
+                return view('error')->with
+                (
+                'error',$exception->getMessage()
+                );
+            }
+            return "Reissued";
+        }
     }
    
 }

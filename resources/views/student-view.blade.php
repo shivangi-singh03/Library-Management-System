@@ -1,5 +1,6 @@
-@extends('layout.std_nav')
 @extends('layout.app')
+@extends('layout.std_nav')
+@section('content')
 <div class="container-lg">
     <div class="table-responsive">
         <div class="table-wrapper">
@@ -42,3 +43,4 @@
     
 </div>
 </div>
+@endsection

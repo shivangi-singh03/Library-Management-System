@@ -1,5 +1,6 @@
-@extends('layout.std_nav')
 @extends('layout.app')
+@extends('layout.std_nav')
+@section('content')
 <div class="container-lg">
     <div class="table-responsive">
         <div class="table-wrapper">
@@ -8,12 +9,12 @@
                     <div class="col-sm-8"><h2>Issue <b>Books</b></h2></div>
                     <tr>
                     <td>
-                     <a href = '/s_issue.issue'>
+                     <a href = '/book_issue.issue'>
                         <button type="button" class="btn btn-info add-new">Issue</button>
                          </a> 
                         </td>
                         <td>
-                        <a href="{{url('/')}}/s_issue.reissue">
+                        <a href="{{url('/')}}/book_issue.reissue">
                         <button type="button" class="btn btn-info add-new">Re-issue</button>
                         </a>
                         </td>
@@ -45,8 +46,5 @@
         <div class="row">{{$books->currentPage()}}</div>
         </div>
     </div>
-    <div class="col-sm-4">
-    
-    
-    </div>
 </div>     
+@endsection

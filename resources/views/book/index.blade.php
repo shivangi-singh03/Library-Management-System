@@ -1,4 +1,6 @@
 @extends('layout.app')
+@extends('layout.admin_nav')
+@section('content')
 <div class="container-lg">
     <div class="table-responsive">
         <div class="table-wrapper">
@@ -10,7 +12,7 @@
                         <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
                     </form>
                     <div class="col-sm-4">
-                        <a href="{{route('panel.create')}}">
+                        <a href="{{route('book.create')}}">
                         <button type="button" class="btn btn-info add-new"><i class="fa fa-plus"></i>Add New</button>
                         </a>
                     </div>
@@ -34,10 +36,15 @@
                     <td>{{$book->author}}</td>
                     <td>{{$book->category}}</td>
                         <td>
-                            <a class="edit" title="Edit" data-toggle="tooltip" href="{{route('panel.edit',$book->id)}}"><i class="material-icons">&#xE254;</i></a>
-                            <a class="delete" title="Delete" data-toggle="tooltip" href="book_delete/{{$book->id}}"><i class="material-icons">&#xE872;</i></a>
+                            <a class="edit" title="Edit" data-toggle="tooltip" href="{{route('book.edit',$book->id)}}"><i class="material-icons">&#xE254;</i></a>
                         </td>
-                    
+                        <td style="background-color:#e9b0b3;">
+                            <form action="/book_delete/{{ $book->id }}" method="POST">
+                            {{ csrf_field() }}
+                            {{ method_field('DELETE') }}
+                            <input type="hidden" name="id">
+                            <button button style="background-color:#f09797;" type="submit">Delete</button>
+                            </form></td>
                     </tr>  
                     @endforeach    
                 </tbody>
@@ -46,3 +53,4 @@
         </div>
     </div>
 </div>     
+@endsection

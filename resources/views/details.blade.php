@@ -12,7 +12,6 @@
                     <tr>
                         <th>Student Id</th>
                         <th>Name</th>
-                        <th>Email</th>
                         <th>BookId</th>
                         <th>Book Name</th>
                         <th>Issue Date</th>
@@ -27,7 +26,6 @@
                     <tr>
                     <td>{{ $row->s_id }}</td>  
                     <td>{{ $row->name }}</td>
-                    <td>{{ $row->email }}</td>
                     <td>{{ $row->id }}</td>
                     <td>{{ $row->title }}</td>
                     <td>{{ $row->issue_date }}</td>
@@ -52,7 +50,7 @@
                 @endforeach
                 </tbody>
             </table>
-    
+            {{ $data->appends($_GET)->links() }}
         </div>
     </div>
 </div>     

@@ -1,5 +1,5 @@
 @extends('layout.app')
-        <form action="{{url('/')}}/panel.create" method="post">
+        <form action="{{url('/')}}/book.create" method="post">
         {{csrf_field()}}
 
          <div class="container">

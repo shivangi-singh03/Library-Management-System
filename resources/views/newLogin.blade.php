@@ -1,4 +1,3 @@
-@extends('layout.app')
 <!doctype html>
 <html lang="{{ app()->getLocale() }}">
     <head>
@@ -14,15 +13,11 @@
     </head>
 
     <body>
-        <form action="{{url('/')}}/student/register" method="post">
+        <form action="{{url('/')}}/newLogin" method="post">
         {{csrf_field()}}
 
          <div class="container">
-          <h1 class="text-center">Registration</h1>
-           <div class="form-group">
-               <label for="Name">Name</label>
-               <input type="text" name="name" id="" class="form-control" placeholder="">
-            </div>
+          <h1 class="text-center">Login</h1>
 
             <div class="form-group">
                <label for="Email">Email</label>
@@ -41,6 +36,5 @@
             
          </div>
         </form>
-
     </body>
 

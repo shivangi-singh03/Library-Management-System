@@ -3,14 +3,26 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Http\Requests\StudentRequest;
+use Exception;
 use App\Student;
 
 class StudentController extends Controller
 {
     public function index()
     {
-        $students=Student::paginate(3);
-        $data=compact('students');
+        try
+        {
+            $students=Student::paginateData();
+        }
+        catch(\Exception $exception)
+        {
+            return view('error')->with
+            (
+            'error',$exception->getMessage()
+            );
+        }
+        $data = compact('students');
         return view('student.index')->with($data);
     }
 
@@ -19,50 +31,87 @@ class StudentController extends Controller
         return view('student.create');
     }
 
-    public function store(Request $request)
+    public function store(StudentRequest $request)
     {
-        $this->validate($request,['name'=>'required|string|max:255',
-        'email'=>'required',
-        'password'=>'required',
-    ]);
-        $name=$request->input('name');
-        $email=$request->input('email');
-        $password=$request->input('password');
-
-        Student::store($name,$email,$password);
-
+        $request->validate();
+        
+        $name = $request->input('name');
+        $email = $request->input('email');
+        $password = $request->input('password');
+        try
+        {
+            Student::addStudent($name, $email, $password);
+        }
+        catch(\Exception $exception)
+        {
+            return view('error')->with
+            (
+            'error',$exception->getMessage()
+            );
+        }
         return redirect('student');
-    }
-
-    public function show(Student $student)
-    {
-        //return view('s_issue.s_index');
     }
 
     
     public function edit($id)
     {
-        $data=Student::edit($id);
-        return view('student.edit')->with($data);
+        if(!empty($id))
+        {
+            try
+            {
+                $student = Student::editStudent($id);
+            }
+            catch(\Exception $exception)
+            {
+                return view('error')->with
+                (
+                'error',$exception->getMessage()
+                );
+            }
+            $u = url('student.edit')."/".$id;
+            $data = compact('student','u');
+            return view('student.edit')->with($data);
+        }
     }
 
-    public function update($id,Request $request)
+    public function update($id, Request $request)
     {
-        Student::updt($id,$request);
-
-        return redirect('student');
+        if(!empty($id))
+        {
+            $name = $request->input('name');
+            $email = $request->input('email');
+            $password = $request->input('password');
+            try
+            {
+                Student::updateStudent($id, $name, $email, $password);
+            }
+            catch(\Exception $exception)
+            {
+                return view('error')->with
+                (
+                'error',$exception->getMessage()
+                );
+            }
+            return redirect('student');
+        }
     }
 
     public function destroy($id)
     {
-        Student::del($id);
-        return redirect('student');
+        if(!empty($id))
+        {
+            try
+            {
+                $data = Student::deleteStudent($id);
+            }
+            catch(\Exception $exception)
+            {
+                return view('error')->with
+                (
+                'error',$exception->getMessage()
+                );
+            }
+            return redirect('student');
+        }
     }
-
-     public function view()
-     {
-       $students=Student::paginate(1);
-       $data=compact('students');
-       return view('s_issue.s_index')->with($data);
-     }
 }

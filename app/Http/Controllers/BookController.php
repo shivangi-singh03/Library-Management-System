@@ -3,76 +3,155 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Http\Requests\BookRequest;
+use Exception;
 use App\Book;
 
 class BookController extends Controller
 {
+    /**
+     * @param String $title
+     * @param String $author
+     * @param String $category
+     */
     
     public function index(Request $request)
     {
-        $search=$request['search']??"";
-        if($search!="")
+        $search = $request->input('search');
+        if(!empty($search))
         {
-          $books=Book::where('title','=',$search)->orWhere('category','=',$search)->get();
+            try
+            {
+                $books=Book::searchBook($search);
+            }
+            catch(\Exception $exception)
+            {
+                return view('error')->with
+                (
+                'error',$exception->getMessage()
+                );
+            }
         }
         else
         {
-          $books=Book::all();
+            $books=Book::all();
         }
-          $data=compact('books','data');
-          return view('panel.index')->with($data);
+        $data=compact('books','data');
+        return view('book.index')->with($data);
     }
 
    
     public function create()
     {
-        return view('panel.create');
+        return view('book.create');
     }
 
-    public function store(Request $request)
+    public function store(BookRequest $request)
     {
-        $this->validate($request,['title'=>'required|string|max:255',
-        'author'=>'required',
-        'category'=>'required',
-    ]);
-    $title=$request->input('title');
-    $author=$request->input('author');
-    $category=$request->input('category');
-
-    Book::store($title,$author,$category);
-
-    return redirect('panel');
+        $request->validate();
+        
+        $title = $request->input('title');
+        $author = $request->input('author');
+        $category = $request->input('category');
+        try
+        {
+            Book::addBook($title, $author, $category);
+        }
+        catch(\Exception $exception)
+        {
+            return view('error')->with
+            (
+            'error',$exception->getMessage()
+            );
+        }
+        return redirect('book');
     }
 
     public function show(Book $book)
     {
-        return view('s_issue.s_index');
+        return view('book_issue.student_index');
     }
 
-    public function edit(Book $book,$id)
+    public function edit($id)
     {
-        $data=Book::edit($id);
-        return view('panel.edit')->with($data);
+        if(!empty($id))
+        {
+            try
+            {
+                $book = Book::editBook($id);
+            }
+            catch(\Exception $exception)
+            {
+                return view('error')->with
+                (
+                'error',$exception->getMessage()
+                );
+            }
+            $u=url('book.edit')."/".$id;
+            $data=compact('book','u');
+            return view('book.edit')->with($data);
+        }
     }
 
-    public function update($id,Request $request)
+    public function update($id, Request $request)
     {
-        Book::updt($id,$request);
-        return redirect('panel');
-
+        if(!empty($id))
+        {
+            $title = $request->input('title');
+            $author = $request->input('author');
+            $category = $request->input('category');
+            try
+            {
+                Book::updateBook($id, $title, $author, $category);
+            }
+            catch(\Exception $exception)
+            {
+                return view('error')->with
+                (
+                'error',$exception->getMessage()
+                );
+            }
+        return redirect('book');
+        }
     }
 
-    public function destroy(Book $book,$id)
+    public function destroy($id)
     {
-        Book::del($id);
-        return redirect('panel');
+        if(!empty($id))
+        {
+            try
+            {
+                $data = Book::deleteBook($id);
+            }
+            catch(\Exception $exception)
+            {
+                return view('error')->with
+                (
+                'error',$exception->getMessage()
+                );
+            }
+            return redirect('book');
+        }
     }
 
-     public function view($id)
-     {
-       $books=Book::paginate(3);
-       $data=compact('books');
-       return view('s_issue.s_index')->with($data);
-     }
+    public function view($id)
+    {
+        if(!empty($id))
+        {
+            try
+            {
+                $books=Book::paginateData();
+            }
+            catch(\Exception $exception)
+            {
+                return view('error')->with
+                (
+                'error',$exception->getMessage()
+                );
+            }
+            $data = compact('books');
+            return view('book_issue.student_index')->with($data);
+        }
+    }
      
 }

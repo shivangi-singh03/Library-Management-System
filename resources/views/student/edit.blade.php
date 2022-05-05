@@ -1,7 +1,7 @@
 @extends('layout.app')
-        <form action="{{route('s_update',[$student->id])}}" method="post">
+        <form action="{{route('student_update',[$student->id])}}" method="post">
         {{csrf_field()}}
-
+        {{ method_field('PUT') }}
          <div class="container">
           <h1 class="text-center">Edit Student Details</h1>
            <div class="form-group">

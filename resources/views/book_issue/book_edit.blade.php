@@ -1,5 +1,5 @@
 @extends('layout.app')
-        <form action="{{route('s_issue.s_edit',[$student->id])}}" method="post">
+        <form action="{{route('book_issue.book_edit',[$student->id])}}" method="post">
         {{csrf_field()}}
 
          <div class="container">

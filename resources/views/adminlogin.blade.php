@@ -13,7 +13,7 @@
     </head>
 
     <body>
-        <form action="{{url('/')}}/adminlogin" method="post">
+        <form action="{{url('/')}}/adminLogin" method="post">
         {{csrf_field()}}
 
          <div class="container">

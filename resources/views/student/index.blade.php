@@ -1,4 +1,6 @@
 @extends('layout.app')
+@extends('layout.admin_nav')
+@section('content')
 <div class="container-lg">
     <div class="table-responsive">
         <div class="table-wrapper">
@@ -29,8 +31,15 @@
                     <td>{{$student->email}}</td>
                         <td>
                             <a class="edit" title="Edit" data-toggle="tooltip" href="{{route('student.edit',$student->id)}}"><i class="material-icons">&#xE254;</i></a>
-                            <a class="delete" title="Delete" data-toggle="tooltip" href="student_delete/{{$student->id}}"><i class="material-icons">&#xE872;</i></a>
                         </td>
+                        <td style="background-color:#e9b0b3;">
+                            <form action="/student_delete/{{ $student->id }}" method="POST">
+                            {{ csrf_field() }}
+                            {{ method_field('DELETE') }}
+                            <input type="hidden" name="id">
+                            <button button style="background-color:#f09797;" type="submit">Delete</button>
+                            </form></td>
+                    </tr>  
                     
                     </tr>  
                     @endforeach    
@@ -41,3 +50,4 @@
         </div>
     </div>
 </div>     
+@endsection

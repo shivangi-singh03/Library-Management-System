@@ -14,7 +14,7 @@
     </head>
 
     <body>
-        <form action="{{url('/')}}/student/register" method="post">
+        <form action="{{url('/')}}/r" method="post">
         {{csrf_field()}}
 
          <div class="container">
@@ -33,6 +33,15 @@
                <label for="Password">Password</label>
                <input type="password" name="password" id="" class="form-control" placeholder="">
             </div>
+
+            <label for=""><b>Designation</b></label>
+         
+           <select name="designation" id="designation">
+         
+           <option value="Admin">Admin</option>
+           <option value="Student">Student</option>
+           </select>
+          <br><br>
 
             <button class="btn-btn-primary">
              Submit
